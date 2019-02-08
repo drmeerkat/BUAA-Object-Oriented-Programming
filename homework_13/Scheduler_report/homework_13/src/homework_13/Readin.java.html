@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Readin.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">New_schedulerTest (2017-5-31 13:14:27)</a> &gt; <a href="../../index.html" class="el_group">homework_13</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">homework_13</a> &gt; <span class="el_source">Readin.java</span></div><h1>Readin.java</h1><pre class="source lang-java linenums">package homework_13;
+import java.util.regex.*;
+
+import java.util.Scanner;
+
+
+<span class="nc" id="L7">public class Readin {</span>
+	
+
+	public static void main(String[] args) {
+<span class="nc" id="L11">		int request_count = 0;</span>
+<span class="nc" id="L12">		Scanner scan = new Scanner(System.in);</span>
+<span class="nc" id="L13">		String line = &quot;&quot;;</span>
+<span class="nc" id="L14">		String char_pattern = &quot;[^\\dEFRDOWNUP,\\(\\)\\+]&quot;;</span>
+<span class="nc" id="L15">		Pattern find_char = Pattern.compile(char_pattern);</span>
+		Matcher match_char;
+<span class="nc" id="L17">		Elevator elevator = new Elevator();</span>
+<span class="nc" id="L18">		Floor floor = new Floor();</span>
+<span class="nc" id="L19">		Request_queue request_queue = new Request_queue();</span>
+<span class="nc" id="L20">		New_scheduler scheduler = new New_scheduler(request_queue, elevator, floor);</span>
+		Request temp_request;
+		try {
+<span class="nc" id="L23">			System.out.println(&quot;Please input your request&quot;);</span>
+<span class="nc" id="L24">			while (true) {</span>
+<span class="nc" id="L25">				line = scan.nextLine().replace(&quot; &quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L26" title="All 2 branches missed.">				if (line.equals(&quot;start&quot;)) break;</span>
+<span class="nc" id="L27">				match_char = find_char.matcher(line);</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">				if (match_char.find()){</span>
+<span class="nc" id="L29">					System.out.println(&quot;your input has illegal characters or you have input the wrong spell of 'start' and will be skipped&quot;);</span>
+<span class="nc" id="L30">					System.out.println(&quot;INVALID &quot; + line);</span>
+<span class="nc" id="L31">					continue;</span>
+				} 
+<span class="nc bnc" id="L33" title="All 2 branches missed.">				if (elevator.ele_request(line)){</span>
+//					System.out.println(&quot;ele test success&quot;);
+<span class="nc" id="L35">					temp_request = new Request(&quot;ER&quot;, line, request_count);</span>
+<span class="nc" id="L36">				}</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">				else if (floor.flr_request(line)){</span>
+//					System.out.println(&quot;floor test success&quot;);
+<span class="nc" id="L39">					temp_request = new Request(&quot;FR&quot;, line, request_count);</span>
+<span class="nc" id="L40">				}</span>
+				else {
+<span class="nc" id="L42">					System.out.println(&quot;Match failed, your input will be skipped&quot;);</span>
+<span class="nc" id="L43">					System.out.println(&quot;INVALID &quot; + line);</span>
+<span class="nc" id="L44">					continue;</span>
+				}
+<span class="nc bnc" id="L46" title="All 4 branches missed.">				if (!request_queue.request_q.isEmpty() &amp;&amp; temp_request.getTime() &lt; request_queue.request_q.getFirst().getTime()){</span>
+<span class="nc" id="L47">					System.out.println(&quot;Newly coming request's time should be no less than the previous ones' and your input will be skipped&quot;);</span>
+<span class="nc" id="L48">					System.out.println(&quot;INVALID &quot; + line);</span>
+<span class="nc" id="L49">					continue;</span>
+				}
+<span class="nc" id="L51">				request_count++;</span>
+<span class="nc bnc" id="L52" title="All 4 branches missed.">				if (request_count == 1 &amp;&amp; !temp_request.toString().equals(&quot;[FR,1,UP,0]&quot;)){</span>
+<span class="nc" id="L53">					System.out.println(&quot;The first request must be (FR,1,UP,0)&quot;);</span>
+<span class="nc" id="L54">					System.out.println(&quot;INVALID &quot; + line);</span>
+<span class="nc" id="L55">					request_count = 0;</span>
+<span class="nc" id="L56">					continue;</span>
+				}
+<span class="nc" id="L58">				request_queue.request_q.add(temp_request);</span>
+			}
+		}
+<span class="nc" id="L61">		catch (Exception e){</span>
+<span class="nc" id="L62">			System.out.println(&quot;FATAL_ERROR: maybe the input is too long, check the virtual space assigned to your JVM&quot;);</span>
+<span class="nc" id="L63">			System.out.println(&quot;INVALID &quot; + line);</span>
+<span class="nc" id="L64">			System.exit(0);</span>
+		} 
+<span class="nc" id="L66">		finally {</span>
+<span class="nc" id="L67">			scan.close();</span>
+<span class="nc" id="L68">		}</span>
+//		start to schedule	
+		try{
+<span class="nc" id="L71">			System.out.println(&quot;The elevator starts to run!&quot;);</span>
+<span class="nc" id="L72">			scheduler.scan_queue();</span>
+<span class="nc" id="L73">			System.out.println(&quot;The elevator finished running!&quot;);</span>
+<span class="nc" id="L74">		}</span>
+<span class="nc" id="L75">		catch (Exception e) {</span>
+<span class="nc" id="L76">			System.out.println(&quot;Unknown ERROR: please check your input or the virtual space assigned to your JVM&quot;);</span>
+<span class="nc" id="L77">			System.exit(0);</span>
+		}
+		
+		
+		
+
+<span class="nc" id="L83">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>New_schedulerTest (2017-5-31 13:14:27)</div></body></html>

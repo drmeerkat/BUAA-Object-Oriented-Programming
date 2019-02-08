@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Elevator.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">New_schedulerTest (2017-5-31 13:14:27)</a> &gt; <a href="../../index.html" class="el_group">homework_13</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">homework_13</a> &gt; <span class="el_source">Elevator.java</span></div><h1>Elevator.java</h1><pre class="source lang-java linenums"> package homework_13;
+
+import java.text.DecimalFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+public class Elevator implements Elerun_interface{	
+	/* Overview
+	 * 电梯类，保存了当前电梯内部运行时间和电梯按钮状态，所在楼层，运动状态，按钮对应请求
+	 * 可供调度器查询，可提供正则表达式判断输入的字符串是否属于电梯类请求
+	 * 可输出字符串格式的电梯当前状态
+	 */
+	protected double time;
+	protected int current_fr;
+	protected String state;
+	protected int [] button;
+	protected Request [] re_button;
+<span class="fc" id="L19">	private static long MAX_VALUE = 2147483647L;  </span>
+	
+<span class="fc" id="L21">	public Elevator() {</span>
+		/*
+		 * @REQUIRES:	None
+		 * @MODIFIES:	time
+		 * 				current_fr
+		 * 				state
+		 * 				button
+		 * 				re_button
+		 * 				
+		 * @EFFECTS:	初始化电梯，设置好内部的的各种初始状态
+		 */ 
+<span class="fc" id="L32">		time = 0;</span>
+<span class="fc" id="L33">		current_fr = 1;</span>
+<span class="fc" id="L34">		state = &quot;&quot;;</span>
+<span class="fc" id="L35">		button = new int[] {0,0,0,0,0,0,0,0,0,0};</span>
+<span class="fc" id="L36">		re_button = new Request[10];</span>
+<span class="fc" id="L37">	}</span>
+	 
+	public boolean repOK(){
+		/*
+		 * @REQUIRES:	None;
+		 * @MODIFIES:	None;
+		 * @EFFECTS:	Checks if &quot;this&quot; is legal.
+		 */
+<span class="nc bnc" id="L45" title="All 10 branches missed.">		if (state == null||re_button==null||button==null||current_fr&gt;10||current_fr&lt;1)</span>
+<span class="nc" id="L46">			return false;</span>
+<span class="nc" id="L47">		return true;</span>
+	}
+
+	public String toString(){
+		/*
+		 * @REQUIRES:	None
+		 * @MODIFIES:	None
+		 * @EFFECTS:	返回当前电梯状态的详细信息，同时时间计数保留一位小数
+		 */
+<span class="fc" id="L56">		DecimalFormat decimalFormat = new DecimalFormat(&quot;0.0&quot;);</span>
+<span class="fc" id="L57">		return &quot;(&quot; + current_fr + &quot;,&quot; + state + &quot;,&quot; + String.valueOf(decimalFormat.format(time))+&quot;)&quot;;</span>
+	} 
+	
+	public boolean ele_request(String line){
+		/*
+		 * @REQUIRES:	None
+		 * @MODIFIES:	None
+		 * @EFFECTS:    如果输入匹配要求的正则表达式，则返回true，否则返回false
+		 */
+<span class="nc" id="L66">		Pattern find_request = Pattern.compile(&quot;\\(ER,(\\+?\\d+),(\\+?\\d+)\\)&quot;);</span>
+<span class="nc" id="L67">		Matcher match_request = find_request.matcher(line);</span>
+		long temp;
+		 
+<span class="nc bnc" id="L70" title="All 2 branches missed.">		if (match_request.matches()) { </span>
+<span class="nc" id="L71">			temp = Long.parseLong(match_request.group(1));</span>
+<span class="nc bnc" id="L72" title="All 4 branches missed.">			if (temp &gt; 10 || temp &lt; 1 </span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">				|| Long.parseLong(match_request.group(2)) &gt; MAX_VALUE){</span>
+<span class="nc" id="L74">				return false;</span>
+			}
+<span class="nc" id="L76">			return true;</span>
+		}
+			
+<span class="nc" id="L79">		else return false;</span>
+	}
+	
+	
+	public void addTime(double run_time){
+		/*
+		 * @REQUIRES:	/all double run_time; 0&lt;=run_time &lt;=Max value
+		 * @MODIFIES:	time
+		 * @EFFECTS:	给电梯运行时间增加run_time大小
+		 */
+<span class="nc" id="L89">		time += run_time;</span>
+<span class="nc" id="L90">	}</span>
+	
+	
+	
+	public void setCurrentfr(String dir){
+		/*
+		 * @REQUIRES:	/all String dir;dir == UP|DOWN
+		 * @MODIFIES:	current_fr
+		 * @EFFECTS:	如果方向是上楼则楼层加一，如果是下楼则楼层减一，
+		 * 				如果输入方向不是规定的字符串则报错
+		 */
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		if (dir == &quot;UP&quot;){</span>
+<span class="fc" id="L102">			current_fr += 1;</span>
+<span class="fc" id="L103">		}</span>
+		
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">		else if (dir == &quot;DOWN&quot;){</span>
+<span class="fc" id="L106">			current_fr -= 1;</span>
+<span class="fc" id="L107">		}</span>
+		
+		else{
+<span class="nc" id="L110">			System.out.println(&quot;FATAL ERROR:state still cannot refresh the fr&quot;);</span>
+		}
+<span class="fc" id="L112">	}</span>
+	
+	public boolean pressButton(Request button_request){
+		/*
+		 * @REQUIRES:	/all Request button_request;button_request!=null
+		 * @MODIFIES:   button
+		 * 				re_button
+		 * @EFFECTS:	模拟电梯按钮被按下。如果输入不合法则输出报错信息
+		 */
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">		if (button_request!=null){</span>
+<span class="fc" id="L122">			int k = button_request.getFlr();</span>
+<span class="fc" id="L123">			button[k-1] = 1;</span>
+<span class="fc" id="L124">			re_button[k-1] = button_request;</span>
+<span class="fc" id="L125">			return true;</span>
+		}
+		else{
+<span class="nc" id="L128">			System.out.println(&quot;Wrong input!&quot;);</span>
+<span class="nc" id="L129">			return false;</span>
+		}
+	}
+	
+
+	
+	
+	public boolean unlock(int k){
+		/*
+		 * @REQUIRES:	/all int k;1&lt;=k&lt;=10
+		 * @MODIFIES:	button
+		 * 				re_button
+		 * @EFFECTS:	将指定楼层电梯按钮恢复到没有按下的状态并清空这个按钮对应的请求信息。
+		 * 				如果输入不合法或对应的按钮并没有被按下则输出报错信息
+		 */ 
+<span class="pc bpc" id="L144" title="3 of 6 branches missed.">		if (k&lt;=10 &amp;&amp; k&gt;=1 &amp;&amp; button[k-1] == 1){</span>
+<span class="fc" id="L145">			button[k-1] = 0;</span>
+<span class="fc" id="L146">			re_button[k-1] = null;</span>
+<span class="fc" id="L147">			return true;</span>
+		}
+			
+		else{
+<span class="nc" id="L151">			System.out.println(&quot;ERROR3: the button isn't lightend&quot;);</span>
+<span class="nc" id="L152">			return false;</span>
+		}
+	}
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>New_schedulerTest (2017-5-31 13:14:27)</div></body></html>

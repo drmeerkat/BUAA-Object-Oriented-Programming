@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>New_scheduler.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">New_schedulerTest (2017-5-31 13:14:27)</a> &gt; <a href="../../index.html" class="el_group">homework_13</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">homework_13</a> &gt; <span class="el_source">New_scheduler.java</span></div><h1>New_scheduler.java</h1><pre class="source lang-java linenums">package homework_13;
+
+import java.util.LinkedList;
+
+public class New_scheduler{
+	/* Overview
+	 * 管理电梯，请求队列，楼层按钮三个类的实例，
+	 * 并根据请求队列和当前运行时间进行调度，模拟电梯运行，输出信息
+	 */
+	
+	protected double clock;
+	protected Request main_request;
+	protected String run_dir;
+	protected Request_queue queue; 
+	protected Elevator elevator;  
+	protected Floor floor;
+	
+	
+<span class="fc" id="L19">	public New_scheduler(Request_queue queue, Elevator elevator, Floor floor) {</span>
+		/*
+		 * @REQUIRES:	/all Request_queue queue, Elevator elevator, Floor floor;
+		 * 				queue!=null , elevator!=null, floor!=null
+		 * @MODIFIES:	clock
+		 * 				main_request
+		 * 				run_dir
+		 * 				this
+		 * @EFFECTS:    初始化调度器, 设置起始时刻为0.如果输入的不符合require，构造函数报错并退出
+		 */
+<span class="fc bfc" id="L29" title="All 6 branches covered.">		if (queue==null||elevator==null||floor==null){</span>
+<span class="fc" id="L30">			System.out.println(&quot;Wrong input&quot;);</span>
+<span class="fc" id="L31">		}</span>
+		else{
+<span class="fc" id="L33">			clock = 0;</span>
+<span class="fc" id="L34">			main_request = null;</span>
+<span class="fc" id="L35">			run_dir = &quot;&quot;;</span>
+<span class="fc" id="L36">			this.elevator = elevator;</span>
+<span class="fc" id="L37">			this.floor = floor;</span>
+<span class="fc" id="L38">			this.queue = queue;</span>
+		}
+<span class="fc" id="L40">	}</span>
+	
+	public boolean repOK(){
+		/*
+		 * @REQUIRES:	None;
+		 * @MODIFIES:	None;
+		 * @EFFECTS:	Checks if &quot;this&quot; is legal.
+		 */
+<span class="fc bfc" id="L48" title="All 8 branches covered.">		if (run_dir == null||queue == null||elevator == null||floor == null)</span>
+<span class="fc" id="L49">			return false;</span>
+<span class="fc" id="L50">		return true;</span>
+	}
+	
+	public Request getMain(){
+		/*
+		 * @REQUIRES:	None
+		 * @MODIFIES:	requeset_q
+		 * 				
+		 * @EFFECTS:	从请求队列中获取下一个要执行的主请求
+		 */
+		int i;
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		for (i = 0;i &lt;= queue.request_q.size()-1;i++){</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			if (queue.request_q.get(i).getPiggyback()) {</span>
+<span class="fc" id="L63">				return queue.request_q.remove(i);</span>
+			}
+		}
+		
+<span class="fc" id="L67">		return queue.request_q.removeFirst();</span>
+	}
+	
+	 
+	public void scan_queue(){
+		/*
+		 * @REQUIRES:	None
+		 * @MODIFIES:	elevator
+		 * 				floor
+		 * 				queue
+		 * 				this
+		 * @EFFECTS:	扫描请求队列发现所有可做为主请求或捎带的请求，刷新按钮状态和请求队列状态
+		 * 				并根据请求的执行情况开关门，更新运动方向，增加运行时间
+		 */
+//		check if time 0 has requests
+<span class="fc" id="L82">		refreshButton(); </span>
+<span class="fc bfc" id="L83" title="All 4 branches covered.">		while (main_request != null||!queue.request_q.isEmpty()){ </span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">			if (main_request == null){</span>
+<span class="fc" id="L85">				main_request = getMain();</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">				if (main_request.getTime() &gt; clock) {</span>
+<span class="fc" id="L87">					clock = main_request.getTime();</span>
+<span class="fc" id="L88">					lock_button(main_request);</span>
+<span class="fc" id="L89">					refreshButton();</span>
+				}
+<span class="fc bfc" id="L91" title="All 4 branches covered.">				run_dir = (elevator.current_fr &lt; main_request.getFlr())? &quot;UP&quot;:(elevator.current_fr == main_request.getFlr())?&quot;STILL&quot;:&quot;DOWN&quot;;</span>
+				
+<span class="fc bfc" id="L93" title="All 2 branches covered.">				if (run_dir == &quot;STILL&quot;) {</span>
+<span class="fc" id="L94">					clock += 0.5;</span>
+<span class="fc" id="L95">					refreshButton();</span>
+<span class="fc" id="L96">					clock += 0.5;</span>
+<span class="fc" id="L97">					refreshButton();</span>
+<span class="fc" id="L98">					run_ele(clock, run_dir, main_request);</span>
+<span class="fc" id="L99">					unlock_button(main_request);</span>
+<span class="fc" id="L100">					main_request = null;</span>
+<span class="fc" id="L101">					continue;</span>
+				}
+			} 
+<span class="fc" id="L104">			clock += 0.5;</span>
+<span class="fc" id="L105">			elevator.setCurrentfr(run_dir);</span>
+//				elevator.setState(run_dir);
+//				elevator.setTime(clock);
+//				System.out.println(main_request+&quot; &quot;+elevator+&quot;, at &quot;+clock);
+<span class="fc" id="L109">			refreshButton();</span>
+ 
+
+<span class="fc" id="L112">			int door = 0, upflag = 0, downflag = 0, eleflag = 0;  </span>
+<span class="fc bfc" id="L113" title="All 4 branches covered.">			if ((floor.getUplock(elevator.current_fr) == 1 &amp;&amp; run_dir.equals(&quot;UP&quot;)) ){</span>
+<span class="fc" id="L114">				run_ele(clock, run_dir, floor.getUprequest(elevator.current_fr));</span>
+<span class="fc" id="L115">				queue.rmSpecified(floor.getUprequest(elevator.current_fr ));</span>
+<span class="fc" id="L116">				door = 1;</span>
+<span class="fc" id="L117">				upflag = 1;  </span>
+			} 
+<span class="fc bfc" id="L119" title="All 4 branches covered.">			if ((floor.getDownlock(elevator.current_fr) == 1 &amp;&amp; run_dir.equals(&quot;DOWN&quot;)) ){</span>
+<span class="fc" id="L120">				run_ele(clock, run_dir, floor.getDownrequest(elevator.current_fr));</span>
+<span class="fc" id="L121">				queue.rmSpecified(floor.getDownrequest(elevator.current_fr));</span>
+<span class="fc" id="L122">				door = 1;</span>
+<span class="fc" id="L123">				downflag = 1;</span>
+			} 
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			if (elevator.button[elevator.current_fr-1] == 1 ){</span>
+<span class="fc" id="L126">				run_ele(clock, run_dir, elevator.re_button[elevator.current_fr-1]);</span>
+<span class="fc" id="L127">				queue.rmSpecified(elevator.re_button[elevator.current_fr-1]);	</span>
+<span class="fc" id="L128">				door = 1;</span>
+<span class="fc" id="L129">				eleflag = 1;</span>
+			}
+<span class="fc bfc" id="L131" title="All 2 branches covered.">			if (door == 1){</span>
+<span class="fc" id="L132">				clock += 0.5;</span>
+<span class="fc" id="L133">				refreshButton();</span>
+<span class="fc" id="L134">				clock += 0.5;</span>
+<span class="fc" id="L135">				refreshButton();</span>
+			} 
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			if (upflag == 1)</span>
+<span class="fc" id="L139">				floor.unlockUp(elevator.current_fr);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">			if (downflag == 1)</span>
+<span class="fc" id="L141">				floor.unlockDown(elevator.current_fr);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">			if (eleflag == 1)</span>
+<span class="fc" id="L143">				elevator.unlock(elevator.current_fr);</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">			if (elevator.current_fr == main_request.getFlr()) main_request = null;</span>
+		}
+<span class="fc" id="L146">	}</span>
+
+//	public void addClock(){
+//		/*
+//		 * @REQUIRES:	None
+//		 * @MODIFIES:	clock
+//		 * 				this
+//		 * @EFFECTS:	增加时钟计数，并根据更新后的时间刷新按钮状态
+//		 */
+//		clock += 0.5;
+//		refreshButton();
+//	} 
+	
+	public void refreshButton(){
+		/*
+		 * @REQUIRES:	None
+		 * @MODIFIES:	this
+		 * @EFFECTS:	根据更新后的时间扫描请求队列将当前时间节点的请求对应的按钮点亮；
+		 * 				并判断当前有没有可以捎带的电梯类请求
+		 */ 
+<span class="fc" id="L166">		double now = clock;</span>
+		int i;  
+		Request temp_re;
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L170">		LinkedList&lt;Request&gt; temp_list = (LinkedList&lt;Request&gt;)queue.request_q.clone();</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">		for (i = 0;i &lt; temp_list.size();i++){</span>
+<span class="fc" id="L172">			temp_re = temp_list.get(i);</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">			if (temp_re.getTime() != now) </span>
+<span class="fc" id="L174">				continue;   </span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">			if (checkButton(temp_re) ){</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">				if ((temp_re.getCat().equals(&quot;ER&quot;))){</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">					if ( (run_dir.equals(&quot;UP&quot;) </span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">							&amp;&amp; temp_re.getFlr() &gt; main_request.getFlr()) </span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">					  || (run_dir.equals(&quot;DOWN&quot;) </span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">							  &amp;&amp; temp_re.getFlr() &lt; main_request.getFlr()) ){</span>
+<span class="fc" id="L181">						temp_re.setPiggyback();</span>
+					}
+				}
+<span class="fc" id="L184">				lock_button(temp_re);</span>
+			}
+		}
+<span class="fc" id="L187">	}</span>
+	
+	public boolean checkButton(Request run_request){
+		/*
+		 * @REQUIRES:	Request run_request;run_request!=null
+		 * @MODIFIES:	this
+		 * 				
+		 * @EFFECTS:	if 输入请求属于ER类请求
+		 * 					if 对应电梯按钮已经点亮
+		 * 						从请求队列中删除这个请求并输出重复信息
+		 * 						return false
+		 *				else 
+		 *					//输入请求属于FR类请求
+		 *					if 对应的楼层上对应方向按钮已经点亮
+		 *						从请求队列中删除这个请求并输出重复信息
+		 *						return false
+		 *				return true
+		 *				
+		 */
+<span class="fc bfc" id="L206" title="All 2 branches covered.">		if (run_request.getCat().equals(&quot;ER&quot;)) {</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">			if (elevator.button[run_request.getFlr()-1] == 1){</span>
+<span class="fc" id="L208">				System.out.println(&quot;The button has been pressed and is not finished yet&quot;);</span>
+<span class="fc" id="L209">				System.out.println(&quot;SAME &quot;+run_request);</span>
+<span class="fc" id="L210">				queue.rmSpecified(run_request);</span>
+<span class="fc" id="L211">				return false;</span>
+			}
+		}
+			
+		else{
+<span class="fc bfc" id="L216" title="All 2 branches covered.">			if (floor.getLock(run_request.getFlr(), run_request.getDR_dir())){</span>
+<span class="fc" id="L217">				System.out.println(&quot;The button has been pressed and is not finished yet&quot;);</span>
+<span class="fc" id="L218">				System.out.println(&quot;SAME &quot;+run_request);</span>
+<span class="fc" id="L219">				queue.rmSpecified(run_request);</span>
+<span class="fc" id="L220">				return false;</span>
+			}
+		}
+		
+		
+<span class="fc" id="L225">		return true;</span>
+	}
+	
+
+	public String run_ele(double now, String run_dir, Request re){
+		/*
+		 * @REQUIRES:	Request re;re!=null
+		 * @MODIFIES:	elevator
+		 * @EFFECTS:	根据输入的时刻和运动方向更新电梯状态
+		 * 				根据输入的当前执行完成的请求输出执行信息
+		 */
+<span class="fc" id="L236">		elevator.state = run_dir;</span>
+<span class="fc" id="L237">		elevator.time = now;</span>
+<span class="fc" id="L238">		System.out.println(re + &quot;/&quot; + elevator);</span>
+<span class="fc" id="L239">		return re + &quot;/&quot; + elevator;</span>
+	}
+	
+	public void lock_button(Request run_request){
+		/*
+		 * @REQUIRES:	Request run_request;run_request!=null
+		 * @MODIFIES:	this
+		 * @EFFECTS:	if 输入请求属于ER类请求
+		 * 					点亮对应的电梯按钮
+		 *				else if 输入请求属于FR类请求
+		 *					if 请求方向是向上的
+		 *						点亮对应楼层的上行按钮
+		 *					else if 请求方向是向下的
+		 *						点亮对应楼层的下行按钮
+		 */
+<span class="fc bfc" id="L254" title="All 2 branches covered.">		if (run_request.getCat().equals(&quot;ER&quot;)) {</span>
+<span class="fc" id="L255">			elevator.pressButton(run_request);</span>
+<span class="fc" id="L256">		}</span>
+			
+		else{
+<span class="fc bfc" id="L259" title="All 2 branches covered.">			if (run_request.getDR_dir().equals(&quot;UP&quot;)) </span>
+<span class="fc" id="L260">				floor.setUplock(run_request.getFlr(), run_request);</span>
+			else 
+<span class="fc" id="L262">				floor.setDownlock(run_request.getFlr(), run_request);</span>
+
+		}
+		
+<span class="fc" id="L266">	}</span>
+	
+	public void unlock_button(Request run_request){
+		/*
+		 * @REQUIRES:	Request run_request;run_request!=null
+		 * @MODIFIES:	this
+		 * @EFFECTS:	根据输入的请求判断是电梯请求还是楼层请求，并将对应的按钮熄灭
+		 */
+<span class="fc bfc" id="L274" title="All 2 branches covered.">		if (run_request.getCat().equals(&quot;ER&quot;)) </span>
+<span class="fc" id="L275">			elevator.unlock(run_request.getFlr());</span>
+		else{ 
+<span class="fc bfc" id="L277" title="All 2 branches covered.">			if (run_request.getDR_dir().equals(&quot;UP&quot;)) </span>
+<span class="fc" id="L278">				floor.unlockUp(run_request.getFlr());</span>
+			else 
+<span class="fc" id="L280">				floor.unlockDown(run_request.getFlr());</span>
+		}
+<span class="fc" id="L282">	}</span>
+	
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>New_schedulerTest (2017-5-31 13:14:27)</div></body></html>

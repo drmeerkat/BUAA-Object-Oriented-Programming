@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>New_schedulerTest.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">New_schedulerTest (2017-5-31 13:14:27)</a> &gt; <a href="../../index.html" class="el_group">homework_13</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">homework_13</a> &gt; <span class="el_source">New_schedulerTest.java</span></div><h1>New_schedulerTest.java</h1><pre class="source lang-java linenums">package homework_13;
+
+import static org.junit.Assert.*;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+ 
+<span class="fc" id="L9">public class New_schedulerTest { </span>
+
+	New_scheduler scheduler;
+<span class="fc" id="L12">	Elevator elevator = new Elevator();</span>
+<span class="fc" id="L13">	Floor floor = new Floor();</span>
+<span class="fc" id="L14">	Request_queue queue = new Request_queue();</span>
+
+	@Before
+	public void setUp() throws Exception {
+<span class="fc" id="L18">		scheduler = new New_scheduler(queue, elevator, floor);</span>
+<span class="fc" id="L19">	}</span>
+
+	@After
+	public void tearDown() throws Exception {
+<span class="fc" id="L23">		scheduler = null;</span>
+<span class="fc" id="L24">	}</span>
+
+	@Test
+	public void testNew_scheduler() {
+<span class="fc" id="L28">		scheduler = new New_scheduler(null, elevator, floor);</span>
+<span class="fc" id="L29">		assertNull(scheduler.run_dir);</span>
+<span class="fc" id="L30">		scheduler = new New_scheduler(queue, null, floor);</span>
+<span class="fc" id="L31">		assertNull(scheduler.run_dir);</span>
+<span class="fc" id="L32">		scheduler = new New_scheduler(queue, elevator, null);</span>
+<span class="fc" id="L33">		assertNull(scheduler.run_dir);</span>
+<span class="fc" id="L34">		scheduler = new New_scheduler(queue, elevator, floor);</span>
+<span class="fc" id="L35">		assertNull(scheduler.main_request);</span>
+<span class="fc" id="L36">		assertEquals(&quot;&quot;, scheduler.run_dir);</span>
+<span class="fc" id="L37">		assertEquals(0, scheduler.clock, 0.0001F);</span>
+<span class="fc" id="L38">		assertEquals(scheduler.elevator, elevator);</span>
+<span class="fc" id="L39">		assertEquals(queue, scheduler.queue);</span>
+<span class="fc" id="L40">		assertEquals(floor, scheduler.floor);</span>
+		
+<span class="fc" id="L42">	}</span>
+
+	@Test
+	public void testRepOK() {
+<span class="fc" id="L46">		assertTrue(scheduler.repOK());</span>
+<span class="fc" id="L47">		scheduler.run_dir = null;</span>
+<span class="fc" id="L48">		assertFalse(scheduler.repOK());</span>
+<span class="fc" id="L49">		scheduler = new New_scheduler(queue, elevator, floor);</span>
+<span class="fc" id="L50">		scheduler.queue = null;</span>
+<span class="fc" id="L51">		assertFalse(scheduler.repOK());</span>
+<span class="fc" id="L52">		scheduler = new New_scheduler(queue, elevator, floor);</span>
+<span class="fc" id="L53">		scheduler.elevator = null;</span>
+<span class="fc" id="L54">		assertFalse(scheduler.repOK());</span>
+<span class="fc" id="L55">		scheduler = new New_scheduler(queue, elevator, floor);</span>
+<span class="fc" id="L56">		scheduler.floor = null;</span>
+<span class="fc" id="L57">		assertFalse(scheduler.repOK());</span>
+<span class="fc" id="L58">	}</span>
+ 
+	@Test
+	public void testGetMain() {
+<span class="fc" id="L62">		Request testre0 = new Request(&quot;FR&quot;, &quot;(FR,1,UP,0)&quot;, 0);</span>
+<span class="fc" id="L63">		Request testre1 = new Request(&quot;ER&quot;, &quot;(ER,8,2)&quot;, 1);</span>
+<span class="fc" id="L64">		Request testre2 = new Request(&quot;ER&quot;, &quot;(ER,6,3)&quot;, 2);</span>
+<span class="fc" id="L65">		Request testre3 = new Request(&quot;ER&quot;, &quot;(ER,5,4)&quot;, 3);</span>
+<span class="fc" id="L66">		Request testre4 = new Request(&quot;ER&quot;, &quot;(ER,8,6)&quot;, 4);</span>
+<span class="fc" id="L67">		queue.request_q.add(testre0);</span>
+<span class="fc" id="L68">		queue.request_q.add(testre1);</span>
+<span class="fc" id="L69">		queue.request_q.add(testre2);</span>
+<span class="fc" id="L70">		queue.request_q.add(testre3);</span>
+<span class="fc" id="L71">		queue.request_q.add(testre4);</span>
+<span class="fc" id="L72">		testre3.setPiggyback();</span>
+<span class="fc" id="L73">		scheduler.main_request = scheduler.getMain();</span>
+<span class="fc" id="L74">		assertEquals(testre3.getNO(),scheduler.main_request.getNO());</span>
+<span class="fc" id="L75">		scheduler.main_request = scheduler.getMain();</span>
+<span class="fc" id="L76">		assertEquals(testre0.getNO(),scheduler.main_request.getNO());</span>
+<span class="fc" id="L77">	}</span>
+
+	@Test
+	public void testScan_queue() {
+<span class="fc" id="L81">		queue = new Request_queue();</span>
+<span class="fc" id="L82">		elevator = new Elevator();</span>
+<span class="fc" id="L83">		floor = new Floor();</span>
+<span class="fc" id="L84">		scheduler = new New_scheduler(queue, elevator, floor);</span>
+		try {
+<span class="fc" id="L86">			setUp();</span>
+<span class="pc" id="L87">		} catch (Exception e) {</span>
+<span class="nc" id="L88">			e.printStackTrace(); </span>
+		} 
+<span class="fc" id="L90">		Request testre = new Request(&quot;FR&quot;, &quot;(FR,1,UP,1)&quot;, 0);</span>
+<span class="fc" id="L91">		Request testre0 = new Request(&quot;ER&quot;, &quot;(ER,1,1)&quot;, 1);</span>
+<span class="fc" id="L92">		Request testre1 = new Request(&quot;ER&quot;, &quot;(ER,8,2)&quot;, 2);</span>
+<span class="fc" id="L93">		Request testre2 = new Request(&quot;ER&quot;, &quot;(ER,6,3)&quot;, 3);</span>
+<span class="fc" id="L94">		Request testre3 = new Request(&quot;ER&quot;, &quot;(ER,5,4)&quot;, 4);</span>
+<span class="fc" id="L95">		Request testre4 = new Request(&quot;ER&quot;, &quot;(ER,8,6)&quot;, 5);</span>
+<span class="fc" id="L96">		Request testre5 = new Request(&quot;ER&quot;, &quot;(ER,8,6)&quot;, 5);</span>
+<span class="fc" id="L97">		Request testre6 = new Request(&quot;ER&quot;, &quot;(ER,10,7)&quot;, 6);</span>
+<span class="fc" id="L98">		Request testre7 = new Request(&quot;ER&quot;, &quot;(ER,1,8)&quot;, 7);</span>
+<span class="fc" id="L99">		Request testre8 = new Request(&quot;FR&quot;, &quot;(FR,5,DOWN,9)&quot;, 8);</span>
+<span class="fc" id="L100">		Request testre9 = new Request(&quot;ER&quot;, &quot;(ER,10,10)&quot;, 9);</span>
+<span class="fc" id="L101">		Request testre10 = new Request(&quot;FR&quot;, &quot;(FR,3,DOWN,11)&quot;, 10);</span>
+<span class="fc" id="L102">		Request testre11 = new Request(&quot;FR&quot;, &quot;(FR,8,UP,11)&quot;, 11);</span>
+<span class="fc" id="L103">		Request testre12 = new Request(&quot;FR&quot;, &quot;(FR,3,UP,12)&quot;, 12);</span>
+		 
+<span class="fc" id="L105">		Request testre13 = new Request(&quot;FR&quot;, &quot;(FR,5,DOWN,20)&quot;, 13); </span>
+<span class="fc" id="L106">		Request testre14 = new Request(&quot;FR&quot;, &quot;(FR,6,UP,30)&quot;, 14); </span>
+<span class="fc" id="L107">		Request testre15 = new Request(&quot;FR&quot;, &quot;(FR,7,DOWN,40)&quot;, 15); </span>
+		  
+<span class="fc" id="L109">		queue.request_q.add(testre); </span>
+<span class="fc" id="L110">		queue.request_q.add(testre0);</span>
+<span class="fc" id="L111">		queue.request_q.add(testre1);</span>
+<span class="fc" id="L112">		queue.request_q.add(testre2);</span>
+<span class="fc" id="L113">		queue.request_q.add(testre3);</span>
+<span class="fc" id="L114">		queue.request_q.add(testre4);</span>
+<span class="fc" id="L115">		queue.request_q.add(testre5);</span>
+<span class="fc" id="L116">		queue.request_q.add(testre6);</span>
+<span class="fc" id="L117">		queue.request_q.add(testre7);</span>
+<span class="fc" id="L118">		queue.request_q.add(testre8);</span>
+<span class="fc" id="L119">		queue.request_q.add(testre9);</span>
+<span class="fc" id="L120">		queue.request_q.add(testre10);</span>
+<span class="fc" id="L121">		queue.request_q.add(testre11); </span>
+<span class="fc" id="L122">		queue.request_q.add(testre12);</span>
+<span class="fc" id="L123">		queue.request_q.add(testre13);</span>
+<span class="fc" id="L124">		queue.request_q.add(testre14);</span>
+<span class="fc" id="L125">		queue.request_q.add(testre15);</span>
+<span class="fc" id="L126">		scheduler.scan_queue();</span>
+<span class="fc" id="L127">	}</span>
+
+
+	@Test
+	public void testRefreshButton() {
+<span class="fc" id="L132">		queue = new Request_queue();</span>
+<span class="fc" id="L133">		elevator = new Elevator();</span>
+		try {
+<span class="fc" id="L135">			setUp();</span>
+<span class="pc" id="L136">		} catch (Exception e) {</span>
+<span class="nc" id="L137">			e.printStackTrace();</span>
+		}  
+<span class="fc" id="L139">		Request testre0 = new Request(&quot;FR&quot;, &quot;(FR,1,UP,0)&quot;, 0);</span>
+<span class="fc" id="L140">		Request testre1 = new Request(&quot;ER&quot;, &quot;(ER,8,2)&quot;, 1);</span>
+<span class="fc" id="L141">		Request testre2 = new Request(&quot;ER&quot;, &quot;(ER,6,3)&quot;, 2);</span>
+<span class="fc" id="L142">		Request testre3 = new Request(&quot;ER&quot;, &quot;(ER,5,4)&quot;, 3);</span>
+<span class="fc" id="L143">		Request testre4 = new Request(&quot;ER&quot;, &quot;(ER,9,6)&quot;, 4);</span>
+<span class="fc" id="L144">		queue.request_q.addFirst(testre0);</span>
+<span class="fc" id="L145">		queue.request_q.addFirst(testre1);</span>
+<span class="fc" id="L146">		queue.request_q.addFirst(testre2);</span>
+<span class="fc" id="L147">		queue.request_q.addFirst(testre3);</span>
+		 
+<span class="fc" id="L149">		scheduler.clock = 3;</span>
+<span class="fc" id="L150">		scheduler.run_dir = &quot;UP&quot;;</span>
+<span class="fc" id="L151">		scheduler.main_request = new Request(&quot;ER&quot;, &quot;(ER,4,0)&quot;, 4);</span>
+<span class="fc" id="L152">		scheduler.refreshButton();</span>
+<span class="fc" id="L153">		assertTrue(testre2.getPiggyback());</span>
+<span class="fc" id="L154">		assertFalse(scheduler.checkButton(testre2));</span>
+		
+<span class="fc" id="L156">		scheduler.clock = 4;</span>
+<span class="fc" id="L157">		scheduler.run_dir = &quot;DOWN&quot;;</span>
+<span class="fc" id="L158">		scheduler.main_request = new Request(&quot;ER&quot;, &quot;(ER,8,0)&quot;, 4);</span>
+<span class="fc" id="L159">		scheduler.refreshButton();</span>
+<span class="fc" id="L160">		assertTrue(testre3.getPiggyback());</span>
+<span class="fc" id="L161">		assertFalse(scheduler.checkButton(testre3));</span>
+		
+<span class="fc" id="L163">		queue = new Request_queue();</span>
+<span class="fc" id="L164">		elevator = new Elevator();</span>
+		try {
+<span class="fc" id="L166">			setUp();</span>
+<span class="pc" id="L167">		} catch (Exception e) {</span>
+<span class="nc" id="L168">			e.printStackTrace();</span>
+		}
+ 
+<span class="fc" id="L171">		queue.request_q.addFirst(testre0);</span>
+<span class="fc" id="L172">		queue.request_q.addFirst(testre1);</span>
+<span class="fc" id="L173">		queue.request_q.addFirst(testre2);</span>
+<span class="fc" id="L174">		queue.request_q.addFirst(testre3);</span>
+<span class="fc" id="L175">		scheduler.clock = 2;</span>
+<span class="fc" id="L176">		scheduler.run_dir = &quot;UP&quot;;</span>
+<span class="fc" id="L177">		scheduler.main_request = new Request(&quot;ER&quot;, &quot;(ER,10,0)&quot;, 4);</span>
+<span class="fc" id="L178">		scheduler.refreshButton();</span>
+<span class="fc" id="L179">		assertFalse(testre1.getPiggyback());</span>
+<span class="fc" id="L180">		assertFalse(scheduler.checkButton(testre1));</span>
+		
+		
+<span class="fc" id="L183">		queue = new Request_queue();</span>
+<span class="fc" id="L184">		elevator = new Elevator();</span>
+		try {
+<span class="fc" id="L186">			setUp();</span>
+<span class="pc" id="L187">		} catch (Exception e) {</span>
+<span class="nc" id="L188">			e.printStackTrace();</span>
+		}
+		
+		
+<span class="fc" id="L192">		queue.request_q.addFirst(testre0); </span>
+<span class="fc" id="L193">		queue.request_q.addFirst(testre1);</span>
+<span class="fc" id="L194">		queue.request_q.addFirst(testre2);</span>
+<span class="fc" id="L195">		queue.request_q.addFirst(testre3);</span>
+<span class="fc" id="L196">		scheduler.clock = 6; </span>
+<span class="fc" id="L197">		scheduler.run_dir = &quot;DOWN&quot;; </span>
+<span class="fc" id="L198">		scheduler.main_request = new Request(&quot;ER&quot;, &quot;(ER,5,10)&quot;, 4);</span>
+<span class="fc" id="L199">		scheduler.refreshButton();</span>
+<span class="fc" id="L200">		assertFalse(testre4.getPiggyback()); </span>
+<span class="fc" id="L201">		assertTrue(scheduler.checkButton(testre4));  </span>
+		
+<span class="fc" id="L203">		scheduler.clock = 0; </span>
+<span class="fc" id="L204">		scheduler.run_dir = &quot;UP&quot;; </span>
+<span class="fc" id="L205">		scheduler.main_request = new Request(&quot;ER&quot;, &quot;(ER,5,10)&quot;, 4);</span>
+<span class="fc" id="L206">		scheduler.refreshButton(); </span>
+<span class="fc" id="L207">		assertFalse(testre1.getPiggyback()); </span>
+<span class="fc" id="L208">		assertTrue(scheduler.checkButton(testre1)); </span>
+		
+<span class="fc" id="L210">		queue.request_q.addFirst(testre0); </span>
+<span class="fc" id="L211">		queue.request_q.addFirst(testre0);</span>
+<span class="fc" id="L212">		floor.setUplock(1, testre0);</span>
+<span class="fc" id="L213">		scheduler.clock = 0; </span>
+<span class="fc" id="L214">		scheduler.run_dir = &quot;UP&quot;;  </span>
+<span class="fc" id="L215">		scheduler.main_request = new Request(&quot;ER&quot;, &quot;(ER,5,10)&quot;, 4);</span>
+<span class="fc" id="L216">		scheduler.refreshButton();</span>
+<span class="fc" id="L217">		assertFalse(testre1.getPiggyback()); </span>
+<span class="fc" id="L218">		assertTrue(scheduler.checkButton(testre1)); </span>
+		 
+<span class="fc" id="L220">		queue = new Request_queue();</span>
+<span class="fc" id="L221">		elevator = new Elevator();</span>
+<span class="fc" id="L222">		floor = new Floor();</span>
+<span class="fc" id="L223">		scheduler = new New_scheduler(queue, elevator, floor);</span>
+<span class="fc" id="L224">		queue.request_q.addFirst(testre3);</span>
+<span class="fc" id="L225">		scheduler.clock = 4;</span>
+<span class="fc" id="L226">		scheduler.run_dir = &quot;DOWN&quot;;</span>
+<span class="fc" id="L227">		scheduler.main_request = new Request(&quot;ER&quot;, &quot;(ER,4,0)&quot;, 4);</span>
+<span class="fc" id="L228">		scheduler.refreshButton();</span>
+<span class="fc" id="L229">		assertTrue(testre3.getPiggyback());</span>
+<span class="fc" id="L230">		assertFalse(scheduler.checkButton(testre3));</span>
+<span class="fc" id="L231">	}</span>
+
+
+
+	@Test
+	public void testCheckButton() {
+<span class="fc" id="L237">		Request testre0 = new Request(&quot;FR&quot;, &quot;(FR,1,UP,0)&quot;, 0);</span>
+<span class="fc" id="L238">		Request testre1 = new Request(&quot;ER&quot;, &quot;(ER,8,0)&quot;, 1);</span>
+<span class="fc" id="L239">		Request testre2 = new Request(&quot;ER&quot;, &quot;(ER,6,3)&quot;, 2);</span>
+<span class="fc" id="L240">		queue.request_q.addFirst(testre0);</span>
+<span class="fc" id="L241">		queue.request_q.addFirst(testre1);</span>
+<span class="fc" id="L242">		queue.request_q.addFirst(testre2);</span>
+<span class="fc" id="L243">		scheduler.lock_button(testre0); </span>
+<span class="fc" id="L244">		assertFalse(scheduler.checkButton(testre0));</span>
+<span class="fc" id="L245">		assertTrue(scheduler.checkButton(testre1));</span>
+<span class="fc" id="L246">		assertTrue(scheduler.checkButton(testre2));</span>
+<span class="fc" id="L247">		scheduler.unlock_button(testre0);</span>
+<span class="fc" id="L248">		scheduler.lock_button(testre1);</span>
+<span class="fc" id="L249">		assertTrue(scheduler.checkButton(testre0));</span>
+<span class="fc" id="L250">		assertFalse(scheduler.checkButton(testre1));</span>
+<span class="fc" id="L251">		assertTrue(scheduler.checkButton(testre2));</span>
+<span class="fc" id="L252">		scheduler.unlock_button(testre1);</span>
+<span class="fc" id="L253">		scheduler.lock_button(testre2);</span>
+<span class="fc" id="L254">		assertTrue(scheduler.checkButton(testre0));</span>
+<span class="fc" id="L255">		assertTrue(scheduler.checkButton(testre1));</span>
+<span class="fc" id="L256">		assertFalse(scheduler.checkButton(testre2));</span>
+<span class="fc" id="L257">	}</span>
+
+	@Test
+	public void testRun_ele() {
+<span class="fc" id="L261">		double now = 10;</span>
+<span class="fc" id="L262">		String run_dir = &quot;UP&quot;;</span>
+<span class="fc" id="L263">		Request button_re1 = new Request(&quot;ER&quot;, &quot;(ER,5,1)&quot;, 2); </span>
+<span class="fc" id="L264">		elevator.state = &quot;DOWN&quot;; </span>
+<span class="fc" id="L265">		elevator.current_fr = 8;</span>
+<span class="fc" id="L266">		elevator.time = 100;</span>
+<span class="fc" id="L267">		String temp =  scheduler.run_ele(now, run_dir, button_re1);</span>
+<span class="fc" id="L268">		assertEquals(10, elevator.time, 0.0001F);</span>
+<span class="fc" id="L269">		assertEquals(8, elevator.current_fr);</span>
+<span class="fc" id="L270">		assertEquals(&quot;UP&quot;, elevator.state);</span>
+<span class="fc" id="L271">		assertEquals(button_re1+&quot;/&quot;+elevator, temp);</span>
+<span class="fc" id="L272">	}</span>
+
+	@Test
+	public void testLock_button() {
+<span class="fc" id="L276">		Request button_re1 = new Request(&quot;ER&quot;, &quot;(ER,5,1)&quot;, 2); </span>
+<span class="fc" id="L277">		Request button_re2 = new Request(&quot;FR&quot;, &quot;(FR,2,UP,3)&quot;, 3);</span>
+<span class="fc" id="L278">		Request button_re3 = new Request(&quot;FR&quot;, &quot;(FR,5,DOWN,3)&quot;, 3);</span>
+<span class="fc" id="L279">		scheduler.lock_button(button_re1);</span>
+<span class="fc" id="L280">		assertEquals(1, elevator.button[4]);</span>
+<span class="fc" id="L281">		assertEquals(button_re1, elevator.re_button[4]); </span>
+<span class="fc" id="L282">		scheduler.lock_button(button_re2);</span>
+<span class="fc" id="L283">		assertEquals(1, floor.getUplock(2));</span>
+<span class="fc" id="L284">		assertEquals(button_re2,floor.getUprequest(2)); </span>
+<span class="fc" id="L285">		scheduler.lock_button(button_re3);</span>
+<span class="fc" id="L286">		assertEquals(1, floor.getDownlock(5));</span>
+<span class="fc" id="L287">		assertEquals(button_re3,floor.getDownrequest(5));</span>
+<span class="fc" id="L288">	}</span>
+
+	@Test
+	public void testUnlock_button() {
+<span class="fc" id="L292">		Request button_re1 = new Request(&quot;ER&quot;, &quot;(ER,5,1)&quot;, 2);</span>
+<span class="fc" id="L293">		Request button_re2 = new Request(&quot;FR&quot;, &quot;(FR,2,UP,3)&quot;, 3);</span>
+<span class="fc" id="L294">		Request button_re3 = new Request(&quot;FR&quot;, &quot;(FR,5,DOWN,3)&quot;, 3);</span>
+<span class="fc" id="L295">		elevator.button[4] = 1;</span>
+<span class="fc" id="L296">		elevator.re_button[4] = button_re1;</span>
+<span class="fc" id="L297">		floor.setUplock(2, button_re2);</span>
+<span class="fc" id="L298">		floor.setDownlock(5, button_re3);</span>
+<span class="fc" id="L299">		scheduler.unlock_button(button_re1);</span>
+<span class="fc" id="L300">		assertEquals(0, elevator.button[4]);</span>
+<span class="fc" id="L301">		assertEquals(null, elevator.re_button[4]); </span>
+<span class="fc" id="L302">		scheduler.unlock_button(button_re2);</span>
+<span class="fc" id="L303">		assertEquals(0, floor.getUplock(2));</span>
+<span class="fc" id="L304">		assertNull(floor.getUprequest(2));</span>
+<span class="fc" id="L305">		scheduler.unlock_button(button_re3);</span>
+<span class="fc" id="L306">		assertEquals(0, floor.getDownlock(5));</span>
+<span class="fc" id="L307">		assertNull(floor.getDownrequest(5));</span>
+<span class="fc" id="L308">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>New_schedulerTest (2017-5-31 13:14:27)</div></body></html>

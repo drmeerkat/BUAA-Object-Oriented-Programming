@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Request.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ElevatorTest (2017-5-31 13:16:56)</a> &gt; <a href="../../index.html" class="el_group">homework_13</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">homework_13</a> &gt; <span class="el_source">Request.java</span></div><h1>Request.java</h1><pre class="source lang-java linenums">package homework_13;
+
+
+public class Request {
+	private long request_time;
+	private String request_dir;
+	private int target_flr;
+	private String request_cat;
+	private int NO;
+	private boolean piggyback;
+	
+	 
+<span class="fc" id="L13">	public Request(String cat, String line, int num){ </span>
+<span class="fc" id="L14">		request_cat = cat; </span>
+<span class="fc" id="L15">		NO = num;</span>
+<span class="fc" id="L16">		piggyback = false;</span>
+<span class="fc" id="L17">		String [] data = line.split(&quot;[\\(\\),]&quot;); </span>
+<span class="pc bpc" id="L18" title="1 of 2 branches missed.">		if (cat.equals(&quot;FR&quot;)){</span>
+<span class="nc" id="L19">			request_time = Long.parseLong(data[4]);</span>
+<span class="nc" id="L20">			request_dir = data[3];</span>
+<span class="nc" id="L21">			target_flr = Integer.parseInt(data[2]);</span>
+<span class="nc" id="L22">		}</span>
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">		else if(cat.equals(&quot;ER&quot;)) {</span>
+<span class="fc" id="L24">			request_time = Long.parseLong(data[3]);</span>
+<span class="fc" id="L25">			target_flr = Integer.parseInt(data[2]);</span>
+<span class="fc" id="L26">			request_dir = &quot;&quot;;</span>
+<span class="fc" id="L27">		}</span>
+		
+		else{
+<span class="nc" id="L30">			System.out.println(&quot;Unknown reuest catgory&quot;);</span>
+<span class="nc" id="L31">			System.exit(0);</span>
+		}
+<span class="fc" id="L33">	}</span>
+	
+	public boolean getPiggyback(){
+<span class="nc" id="L36">		return piggyback;</span>
+	}
+	
+	public void setPiggyback(){
+<span class="nc" id="L40">		piggyback = true; </span>
+<span class="nc" id="L41">	}</span>
+	
+	public int getNO(){
+<span class="nc" id="L44">		return NO;</span>
+	}
+	
+	public long getTime(){
+<span class="nc" id="L48">		return request_time;</span>
+	}
+
+	public int getFlr(){
+<span class="fc" id="L52">		return target_flr;</span>
+	}
+	
+	public String getDR_dir(){
+<span class="nc" id="L56">		return request_dir;</span>
+	}
+	 
+	public String getCat(){
+<span class="nc" id="L60">		return request_cat;</span>
+	} 
+//	Overload ToString
+	public String toString(){
+<span class="nc bnc" id="L64" title="All 2 branches missed.">		if (request_cat.equals(&quot;FR&quot;))</span>
+<span class="nc" id="L65">			return &quot;[&quot;+ request_cat + &quot;,&quot; + target_flr + &quot;,&quot; + request_dir + &quot;,&quot; + request_time + &quot;]&quot;;</span>
+		else
+<span class="nc" id="L67">			return &quot;[&quot;+ request_cat + &quot;,&quot; + target_flr + &quot;,&quot; + request_time + &quot;]&quot;;</span>
+	}
+	
+	
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>ElevatorTest (2017-5-31 13:16:56)</div></body></html>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>Floor.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">Request_queueTest (2017-5-31 13:23:38)</a> &gt; <a href="../../index.html" class="el_group">homework_13</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">homework_13</a> &gt; <span class="el_source">Floor.java</span></div><h1>Floor.java</h1><pre class="source lang-java linenums">package homework_13;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Floor {
+	private int [] up_lock;
+	private int [] down_lock;
+	private Request [] up_re;
+	private Request [] down_re;
+<span class="nc" id="L11">	private static long MAX_VALUE = 2147483647L;</span>
+	
+<span class="nc" id="L13">	public Floor(){</span>
+<span class="nc" id="L14">		up_lock = new int[] {0,0,0,0,0,0,0,0,0,0};</span>
+<span class="nc" id="L15">		down_lock = new int[] {0,0,0,0,0,0,0,0,0,0};</span>
+<span class="nc" id="L16">		up_re = new Request [10];</span>
+<span class="nc" id="L17">		down_re = new Request [10];</span>
+<span class="nc" id="L18">	}</span>
+	
+	
+	public void setUplock(int k, Request button_request){
+<span class="nc" id="L22">		up_lock[k-1] = 1; </span>
+<span class="nc" id="L23">		up_re[k-1] = button_request;</span>
+<span class="nc" id="L24">	}</span>
+	
+	public void setDownlock(int k, Request button_request){
+<span class="nc" id="L27">		down_lock[k-1] = 1;</span>
+<span class="nc" id="L28">		down_re[k-1] = button_request;</span>
+<span class="nc" id="L29">	}</span>
+	
+	public int getUplock(int k){
+<span class="nc" id="L32">		return up_lock[k-1];</span>
+	}
+	
+	public Request getUprequest(int k){
+<span class="nc" id="L36">		return up_re[k-1];</span>
+	}
+	
+	public int getDownlock(int k){
+<span class="nc" id="L40">		return down_lock[k-1];</span>
+	}
+	
+	public Request getDownrequest(int k){
+<span class="nc" id="L44">		return down_re[k-1];</span>
+	}
+	
+	public boolean getLock(int k, String dir){
+<span class="nc bnc" id="L48" title="All 2 branches missed.">		if (dir.equals(&quot;UP&quot;))</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">			return getUplock(k) == 1;</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">		else if (dir.equals(&quot;DOWN&quot;))</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">			return getDownlock(k) == 1;</span>
+		else {
+<span class="nc" id="L53">			System.out.println(&quot;FATAL ERROR 4&quot;);</span>
+<span class="nc" id="L54">			System.exit(0);</span>
+<span class="nc" id="L55">			return false;</span>
+		}
+	}
+	
+	public void unlockUp(int k){
+<span class="nc bnc" id="L60" title="All 2 branches missed.">		if (up_lock[k-1] == 1){</span>
+<span class="nc" id="L61">			up_lock[k-1] = 0;</span>
+<span class="nc" id="L62">			up_re[k-1] = null;</span>
+<span class="nc" id="L63">		}</span>
+		else{
+<span class="nc" id="L65">			System.out.println(&quot;FATAL ERROR1: the button isn't lightend&quot;);</span>
+		}
+<span class="nc" id="L67">	}</span>
+	
+	public void unlockDown(int k){
+<span class="nc bnc" id="L70" title="All 2 branches missed.">		if (down_lock[k-1] == 1){</span>
+<span class="nc" id="L71">			down_lock[k-1] = 0;</span>
+<span class="nc" id="L72">			down_re[k-1] = null;</span>
+<span class="nc" id="L73">		}</span>
+		else{
+<span class="nc" id="L75">			System.out.println(&quot;FATAL ERROR2: the button isn't lightend&quot;);</span>
+<span class="nc" id="L76">			System.exit(0);</span>
+		}
+<span class="nc" id="L78">	}</span>
+	
+	public boolean flr_request(String line){
+		long temp;
+<span class="nc" id="L82">		Pattern find_request = Pattern.compile(&quot;\\(FR,(\\+?\\d+),((?:UP)|(?:DOWN)),(\\+?\\d+)\\)&quot;);</span>
+<span class="nc" id="L83">		Matcher match_request = find_request.matcher(line);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">		if (match_request.matches()) {</span>
+<span class="nc" id="L85">			temp = Long.parseLong(match_request.group(1));</span>
+//			System.out.println(match_request.group(3) + match_request.group(2) + match_request.group(1));
+<span class="nc bnc" id="L87" title="All 4 branches missed.">			if (temp &gt; 10 || temp &lt; 1 </span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">			  || Long.parseLong(match_request.group(3)) &gt; MAX_VALUE</span>
+<span class="nc bnc" id="L89" title="All 4 branches missed.">			  ||(temp == 10 &amp;&amp; match_request.group(2).equals(&quot;UP&quot;))</span>
+<span class="nc bnc" id="L90" title="All 4 branches missed.">			  ||(temp == 1 &amp;&amp; match_request.group(2).equals(&quot;DOWN&quot;)) ){</span>
+<span class="nc" id="L91">					return false;</span>
+				}
+<span class="nc" id="L93">			return true;</span>
+		} 
+<span class="nc" id="L95">		else return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>Request_queueTest (2017-5-31 13:23:38)</div></body></html>

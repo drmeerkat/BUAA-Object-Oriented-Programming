@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../../.resources/report.gif" type="image/gif"/><title>ElevatorTest.java</title><link rel="stylesheet" href="../../../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../../.sessions.html" class="el_session">Sessions</a></span><a href="../../../index.html" class="el_report">ElevatorTest (2017-5-31 13:16:56)</a> &gt; <a href="../../index.html" class="el_group">homework_13</a> &gt; <a href="../index.html" class="el_bundle">src</a> &gt; <a href="index.source.html" class="el_package">homework_13</a> &gt; <span class="el_source">ElevatorTest.java</span></div><h1>ElevatorTest.java</h1><pre class="source lang-java linenums">package homework_13;
+
+import static org.junit.Assert.*;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+<span class="fc" id="L9">public class ElevatorTest { </span>
+	Elevator elevator;
+	
+
+	@Before
+	public void setUp(){
+<span class="fc" id="L15">		elevator = new Elevator();  </span>
+<span class="fc" id="L16">		elevator.state = &quot;UP&quot;;</span>
+<span class="fc" id="L17">		elevator.current_fr = 8;</span>
+<span class="fc" id="L18">		elevator.time = 100;</span>
+<span class="fc" id="L19">	}</span>
+
+	@After
+	public void tearDown() throws Exception {
+<span class="fc" id="L23">		elevator = null;</span>
+<span class="fc" id="L24">	} </span>
+
+	@Test
+	public void testElevator() {
+<span class="fc" id="L28">		elevator = new Elevator(); </span>
+<span class="fc" id="L29">		assertEquals(0,elevator.time,0.0001F);</span>
+<span class="fc" id="L30">		assertEquals(&quot;&quot;,elevator.state);</span>
+<span class="fc" id="L31">		assertNotNull(elevator.re_button);</span>
+<span class="fc" id="L32">		assertEquals(10, elevator.re_button.length);</span>
+<span class="fc" id="L33">		assertEquals(10, elevator.button.length);</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">		for (int i=0;i&lt;10;i++){</span>
+<span class="fc" id="L35">			assertEquals(0, elevator.button[i]);</span>
+		}
+<span class="fc" id="L37">	}</span>
+
+	@Test
+	public void testRepOK() {
+<span class="fc" id="L41">		elevator.state=null;</span>
+<span class="fc" id="L42">		assertFalse(elevator.repOK());</span>
+<span class="fc" id="L43">		setUp();</span>
+<span class="fc" id="L44">		assertTrue(elevator.repOK());</span>
+<span class="fc" id="L45">		elevator.re_button=null;</span>
+<span class="fc" id="L46">		assertFalse(elevator.repOK());</span>
+<span class="fc" id="L47">		setUp();</span>
+<span class="fc" id="L48">		elevator.button=null;</span>
+<span class="fc" id="L49">		assertFalse(elevator.repOK());</span>
+<span class="fc" id="L50">		setUp();</span>
+<span class="fc" id="L51">		elevator.current_fr=11;</span>
+<span class="fc" id="L52">		assertFalse(elevator.repOK());</span>
+<span class="fc" id="L53">		setUp();</span>
+<span class="fc" id="L54">		elevator.current_fr=0;</span>
+<span class="fc" id="L55">		assertFalse(elevator.repOK());</span>
+<span class="fc" id="L56">	}</span>
+
+	@Test
+	public void testToString() {
+<span class="fc" id="L60">		assertEquals(&quot;(8,UP,100.0)&quot;, elevator.toString());</span>
+<span class="fc" id="L61">	}</span>
+
+	@Test
+	public void testEle_request() {
+<span class="fc" id="L65">		String line1 = &quot;sdkhfks&quot;; </span>
+<span class="fc" id="L66">		String line2 = &quot;(ER,+4,2)&quot;;</span>
+<span class="fc" id="L67">		String line3 = &quot;(ER,0,2)&quot;;</span>
+<span class="fc" id="L68">		String line4 = &quot;(ER,11,2)&quot;; </span>
+<span class="fc" id="L69">		String line5 = &quot;(ER,4,214748364900)&quot;;</span>
+<span class="fc" id="L70">		assertTrue(elevator.ele_request(line2));</span>
+<span class="fc" id="L71">		assertFalse(elevator.ele_request(line1));</span>
+<span class="fc" id="L72">		assertFalse(elevator.ele_request(line3));</span>
+<span class="fc" id="L73">		assertFalse(elevator.ele_request(line4));</span>
+<span class="fc" id="L74">		assertFalse(elevator.ele_request(line5));</span>
+<span class="fc" id="L75">	}</span>
+
+	@Test
+	public void testAddTime() {
+<span class="fc" id="L79">		elevator.addTime(1);</span>
+<span class="fc" id="L80">		assertEquals(101, elevator.time,0.0001F);</span>
+<span class="fc" id="L81">	}</span>
+
+	@Test
+	public void testSetCurrentfr() {
+<span class="fc" id="L85">		elevator.setCurrentfr(&quot;UP&quot;);</span>
+<span class="fc" id="L86">		elevator.setCurrentfr(&quot;UP&quot;);</span>
+<span class="fc" id="L87">		assertEquals(10, elevator.current_fr);</span>
+<span class="fc" id="L88">		elevator.setCurrentfr(&quot;DOWN&quot;);</span>
+<span class="fc" id="L89">		assertEquals(9, elevator.current_fr);</span>
+<span class="fc" id="L90">		elevator.setCurrentfr(&quot;??&quot;);</span>
+<span class="fc" id="L91">	}</span>
+
+	@Test
+	public void testPressButton() {
+<span class="fc" id="L95">		assertFalse(elevator.pressButton(null));</span>
+<span class="fc" id="L96">		Request button_re = new Request(&quot;ER&quot;, &quot;(ER,10,1)&quot;, 4);</span>
+<span class="fc" id="L97">		assertTrue(elevator.pressButton(button_re));</span>
+<span class="fc" id="L98">		assertEquals(1, elevator.button[9]);</span>
+<span class="fc" id="L99">		assertEquals(button_re, elevator.re_button[9]);</span>
+<span class="fc" id="L100">	}</span>
+
+	@Test
+	public void testUnlock() {
+<span class="fc" id="L104">		Request button_re = new Request(&quot;ER&quot;, &quot;(ER,5,1)&quot;, 5);</span>
+<span class="fc" id="L105">		assertTrue(elevator.pressButton(button_re));</span>
+<span class="fc" id="L106">		assertTrue(elevator.unlock(5));</span>
+<span class="fc" id="L107">		assertFalse(elevator.unlock(-1));</span>
+<span class="fc" id="L108">		assertFalse(elevator.unlock(11));</span>
+<span class="fc" id="L109">		assertFalse(elevator.unlock(5));</span>
+<span class="fc" id="L110">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.6.201602180812</span>ElevatorTest (2017-5-31 13:16:56)</div></body></html>
