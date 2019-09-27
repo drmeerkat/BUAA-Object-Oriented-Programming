@@ -12,4 +12,4 @@ All the course work could be divided into four topics:
 - JSF, JUnit4 Test, Correctness Demonstration, UML (`homework 13-15`)
 - Summative Blog (`homework 4,8,12,16`)  
 ### 0x02 Some Thoughts  
-Our final score based on 50% homework and 50% testing others' homework. It is a pity that I didn't spend too much time on catching others' bugs or I should say I was so merciful that my final score is an awkward 84 even though my homework had few bugs among my peer. 
+Our final score based on 50% homework and 50% testing others' homework. It is a pity that I didn't spend too much time on catching others' bugs or I should say I was so merciful that my final score is an awkward 84 even though my homework had fewer bugs than my peer. 
